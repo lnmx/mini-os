@@ -80,17 +80,6 @@ static void periodic_thread(void *p)
     }
 }
 
-#ifdef CONFIG_NETFRONT
-static struct netfront_dev *net_dev;
-static struct semaphore net_sem = __SEMAPHORE_INITIALIZER(net_sem, 0);
-
-static void netfront_thread(void *p)
-{
-    net_dev = init_netfront(NULL, NULL, NULL, NULL);
-    up(&net_sem);
-}
-#endif
-
 void shutdown_frontends(void)
 {
 }
@@ -133,9 +122,6 @@ int app_main(start_info_t *si)
     create_thread("xenbus_tester", xenbus_tester, si);
 #endif
     create_thread("periodic_thread", periodic_thread, si);
-#ifdef CONFIG_NETFRONT
-    create_thread("netfront", netfront_thread, si);
-#endif
 #ifdef CONFIG_XENBUS
     create_thread("shutdown", shutdown_thread, si);
 #endif
