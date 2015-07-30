@@ -23,7 +23,6 @@ flags-y += "-DMINIOS_REV=\"mini-er $(MINIOS_REV)\""
 CONFIG_START_NETWORK ?= n
 CONFIG_SPARSE_BSS ?= y
 CONFIG_QEMU_XS_ARGS ?= n
-CONFIG_TEST ?= n
 CONFIG_CONSFRONT ?= y
 CONFIG_XENBUS ?= y
 CONFIG_XC ?=y
@@ -56,9 +55,6 @@ INCLUDEDIR ?= ${PREFIX}/include
 
 # Include common mini-os makerules.
 include minios.mk
-
-# Set tester flags
-# CFLAGS += -DBLKTEST_WRITE
 
 # Define some default flags for linking.
 LDLIBS := 
@@ -94,7 +90,6 @@ src-y += hypervisor.c
 src-y += kernel.c
 src-y += mm.c
 src-y += sched.c
-src-$(CONFIG_TEST) += test.c
 
 src-y += lib/ctype.c
 ifneq ($(MINIOS_TARGET_ARCH),arm32)
