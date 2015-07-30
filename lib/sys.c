@@ -27,8 +27,6 @@
 #include <netfront.h>
 #include <blkfront.h>
 #include <fbfront.h>
-#include <tpmfront.h>
-#include <tpm_tis.h>
 #include <xenbus.h>
 #include <xenstore.h>
 #include <poll.h>
@@ -297,16 +295,6 @@ int read(int fd, void *buf, size_t nbytes)
 	    return blkfront_posix_read(fd, buf, nbytes);
         }
 #endif
-#ifdef CONFIG_TPMFRONT
-        case FTYPE_TPMFRONT: {
-	    return tpmfront_posix_read(fd, buf, nbytes);
-        }
-#endif
-#ifdef CONFIG_TPM_TIS
-        case FTYPE_TPM_TIS: {
-	    return tpm_tis_posix_read(fd, buf, nbytes);
-        }
-#endif
 	default:
 	    break;
     }
@@ -343,14 +331,6 @@ int write(int fd, const void *buf, size_t nbytes)
 	case FTYPE_BLK:
 	    return blkfront_posix_write(fd, buf, nbytes);
 #endif
-#ifdef CONFIG_TPMFRONT
-	case FTYPE_TPMFRONT:
-	    return tpmfront_posix_write(fd, buf, nbytes);
-#endif
-#ifdef CONFIG_TPM_TIS
-	case FTYPE_TPM_TIS:
-	    return tpm_tis_posix_write(fd, buf, nbytes);
-#endif
 	default:
 	    break;
     }
@@ -366,16 +346,6 @@ off_t lseek(int fd, off_t offset, int whence)
 #ifdef CONFIG_BLKFRONT
        case FTYPE_BLK:
           target = &files[fd].blk.offset;
-          break;
-#endif
-#ifdef CONFIG_TPMFRONT
-       case FTYPE_TPMFRONT:
-          target = &files[fd].tpmfront.offset;
-          break;
-#endif
-#ifdef CONFIG_TPM_TIS
-       case FTYPE_TPM_TIS:
-          target = &files[fd].tpm_tis.offset;
           break;
 #endif
        case FTYPE_FILE:
@@ -458,18 +428,6 @@ int close(int fd)
 	    files[fd].type = FTYPE_NONE;
 	    return 0;
 #endif
-#ifdef CONFIG_TPMFRONT
-	case FTYPE_TPMFRONT:
-            shutdown_tpmfront(files[fd].tpmfront.dev);
-	    files[fd].type = FTYPE_NONE;
-	    return 0;
-#endif
-#ifdef CONFIG_TPM_TIS
-	case FTYPE_TPM_TIS:
-            shutdown_tpm_tis(files[fd].tpm_tis.dev);
-	    files[fd].type = FTYPE_NONE;
-	    return 0;
-#endif
 #ifdef CONFIG_KBDFRONT
 	case FTYPE_KBD:
             shutdown_kbdfront(files[fd].kbd.dev);
@@ -538,14 +496,6 @@ int fstat(int fd, struct stat *buf)
 #ifdef CONFIG_BLKFRONT
 	case FTYPE_BLK:
 	   return blkfront_posix_fstat(fd, buf);
-#endif
-#ifdef CONFIG_TPMFRONT
-	case FTYPE_TPMFRONT:
-	   return tpmfront_posix_fstat(fd, buf);
-#endif
-#ifdef CONFIG_TPM_TIS
-	case FTYPE_TPM_TIS:
-	   return tpm_tis_posix_fstat(fd, buf);
 #endif
 	default:
 	    break;
