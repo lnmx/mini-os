@@ -212,6 +212,7 @@ clean:	arch_clean
 	find . $(OBJ_DIR) -type l | xargs rm -f
 	rm -f tags TAGS
 	rm -f libminios-xen.pc
+	rm -f libminios.a
 
 
 define all_sources
