@@ -20,14 +20,12 @@ MINIOS_REV=`date --rfc-3339=sec`
 flags-y += "-DMINIOS_REV=\"mini-er $(MINIOS_REV)\""
 
 # Configuration defaults
-CONFIG_START_NETWORK ?= n
 CONFIG_SPARSE_BSS ?= y
 CONFIG_QEMU_XS_ARGS ?= n
 CONFIG_CONSFRONT ?= y
 CONFIG_XENBUS ?= y
 
 # Export config items as compiler directives
-flags-$(CONFIG_START_NETWORK) += -DCONFIG_START_NETWORK
 flags-$(CONFIG_SPARSE_BSS) += -DCONFIG_SPARSE_BSS
 flags-$(CONFIG_QEMU_XS_ARGS) += -DCONFIG_QEMU_XS_ARGS
 flags-$(CONFIG_CONSFRONT) += -DCONFIG_CONSFRONT
