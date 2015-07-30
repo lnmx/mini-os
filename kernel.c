@@ -69,91 +69,24 @@ __attribute__((weak)) void app_shutdown(unsigned reason)
     printk("Shutdown requested: %d\n", reason);
     HYPERVISOR_sched_op(SCHEDOP_shutdown, &sched_shutdown);
 }
-
-static void shutdown_thread(void *p)
-{
-    const char *path = "control/shutdown";
-    const char *token = path;
-    xenbus_event_queue events = NULL;
-    char *shutdown = NULL, *err;
-    unsigned int shutdown_reason;
-    xenbus_watch_path_token(XBT_NIL, path, token, &events);
-    while ((err = xenbus_read(XBT_NIL, path, &shutdown)) != NULL || !strcmp(shutdown, ""))
-    {
-        free(err);
-        free(shutdown);
-        shutdown = NULL;
-        xenbus_wait_for_watch(&events);
-    }
-    err = xenbus_unwatch_path_token(XBT_NIL, path, token);
-    free(err);
-    err = xenbus_write(XBT_NIL, path, "");
-    free(err);
-    printk("Shutting down (%s)\n", shutdown);
-
-    if (!strcmp(shutdown, "poweroff"))
-        shutdown_reason = SHUTDOWN_poweroff;
-    else if (!strcmp(shutdown, "reboot"))
-        shutdown_reason = SHUTDOWN_reboot;
-    else
-        /* Unknown */
-        shutdown_reason = SHUTDOWN_crash;
-    app_shutdown(shutdown_reason);
-    free(shutdown);
-}
 #endif
 
 
 /* This should be overridden by the application we are linked against. */
 __attribute__((weak)) int app_main(start_info_t *si)
 {
-    printk("kernel.c: dummy main: start_info=%p\n", si);
+    // replaced by mirage-platform/bindings/main.c
+
     return 0;
 }
 
 __attribute__((weak)) void start_kernel(void)
 {
-    /* Set up events. */
-    init_events();
-
-    /* ENABLE EVENT DELIVERY. This is disabled at start of day. */
-    local_irq_enable();
-
-    setup_xen_features();
-
-    /* Init memory management. */
-    init_mm();
-
-    /* Init time and timers. */
-    init_time();
-
-    /* Init the console driver. */
-    init_console();
-
-    /* Init grant tables */
-    init_gnttab();
-    
-    /* Init scheduler. */
-    init_sched();
- 
-    /* Init XenBus */
-    init_xenbus();
-
-#ifdef CONFIG_XENBUS
-    create_thread("shutdown", shutdown_thread, NULL);
-#endif
-
-    /* Call (possibly overridden) app_main() */
-    app_main(&start_info);
-
-    /* Everything initialised, start idle thread */
-    run_idle_thread();
+    // replaced by mirage-platform/bindings/main.c
 }
 
 void stop_kernel(void)
 {
-    /* TODO: fs import */
-
     local_irq_disable();
 
     /* Reset grant tables */
