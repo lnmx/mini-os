@@ -75,68 +75,8 @@ void inline print_runqueue(void)
 
 void schedule(void)
 {
-    struct thread *prev, *next, *thread, *tmp;
-    unsigned long flags;
-
-    if (irqs_disabled()) {
-        printk("Must not call schedule() with IRQs disabled\n");
-        BUG();
-    }
-
-    prev = current;
-    local_irq_save(flags); 
-
-    if (in_callback) {
-        printk("Must not call schedule() from a callback\n");
-        BUG();
-    }
-
-    do {
-        /* Examine all threads.
-           Find a runnable thread, but also wake up expired ones and find the
-           time when the next timeout expires, else use 10 seconds. */
-        s_time_t now = NOW();
-        s_time_t min_wakeup_time = now + SECONDS(10);
-        next = NULL;
-        MINIOS_TAILQ_FOREACH_SAFE(thread, &thread_list, thread_list, tmp)
-        {
-            if (!is_runnable(thread) && thread->wakeup_time != 0LL)
-            {
-                if (thread->wakeup_time <= now)
-                    wake(thread);
-                else if (thread->wakeup_time < min_wakeup_time)
-                    min_wakeup_time = thread->wakeup_time;
-            }
-            if(is_runnable(thread)) 
-            {
-                next = thread;
-                /* Put this thread on the end of the list */
-                MINIOS_TAILQ_REMOVE(&thread_list, thread, thread_list);
-                MINIOS_TAILQ_INSERT_TAIL(&thread_list, thread, thread_list);
-                break;
-            }
-        }
-        if (next)
-            break;
-        /* block until the next timeout expires, or for 10 secs, whichever comes first */
-        block_domain(min_wakeup_time);
-        /* handle pending events if any */
-        force_evtchn_callback();
-    } while(1);
-    local_irq_restore(flags);
-    /* Interrupting the switch is equivalent to having the next thread
-       inturrupted at the return instruction. And therefore at safe point. */
-    if(prev != next) switch_threads(prev, next);
-
-    MINIOS_TAILQ_FOREACH_SAFE(thread, &exited_threads, thread_list, tmp)
-    {
-        if(thread != prev)
-        {
-            MINIOS_TAILQ_REMOVE(&exited_threads, thread, thread_list);
-            free_pages(thread->stack, STACK_SIZE_PAGE_ORDER);
-            xfree(thread);
-        }
-    }
+    printk("no scheduler!\n");
+    BUG();
 }
 
 struct thread* create_thread(char *name, void (*function)(void *), void *data)
