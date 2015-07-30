@@ -94,9 +94,3 @@ DEF_CPPFLAGS += -isystem $(MINI-OS_ROOT)/include/posix
 DEF_CPPFLAGS += -isystem $(XEN_ROOT)/tools/xenstore/include
 endif
 
-ifneq ($(LWIPDIR),)
-lwip=y
-DEF_CPPFLAGS += -DHAVE_LWIP
-DEF_CPPFLAGS += -isystem $(LWIPDIR)/src/include
-DEF_CPPFLAGS += -isystem $(LWIPDIR)/src/include/ipv4
-endif

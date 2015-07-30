@@ -26,13 +26,11 @@ CONFIG_QEMU_XS_ARGS ?= n
 CONFIG_TEST ?= n
 CONFIG_PCIFRONT ?= n
 CONFIG_BLKFRONT ?= n
-CONFIG_NETFRONT ?= n
 CONFIG_FBFRONT ?= n
 CONFIG_KBDFRONT ?= n
 CONFIG_CONSFRONT ?= y
 CONFIG_XENBUS ?= y
 CONFIG_XC ?=y
-CONFIG_LWIP ?= $(lwip)
 
 # Export config items as compiler directives
 flags-$(CONFIG_START_NETWORK) += -DCONFIG_START_NETWORK
@@ -40,7 +38,6 @@ flags-$(CONFIG_SPARSE_BSS) += -DCONFIG_SPARSE_BSS
 flags-$(CONFIG_QEMU_XS_ARGS) += -DCONFIG_QEMU_XS_ARGS
 flags-$(CONFIG_PCIFRONT) += -DCONFIG_PCIFRONT
 flags-$(CONFIG_BLKFRONT) += -DCONFIG_BLKFRONT
-flags-$(CONFIG_NETFRONT) += -DCONFIG_NETFRONT
 flags-$(CONFIG_KBDFRONT) += -DCONFIG_KBDFRONT
 flags-$(CONFIG_FBFRONT) += -DCONFIG_FBFRONT
 flags-$(CONFIG_CONSFRONT) += -DCONFIG_CONSFRONT
@@ -99,7 +96,6 @@ src-y += ${FDT_SRC}
 endif
 
 src-$(CONFIG_BLKFRONT) += blkfront.c
-src-y += daytime.c
 src-y += events.c
 src-$(CONFIG_FBFRONT) += fbfront.c
 src-y += gntmap.c
@@ -109,7 +105,6 @@ src-y += kernel.c
 src-y += lock.c
 src-y += main.c
 src-y += mm.c
-src-$(CONFIG_NETFRONT) += netfront.c
 src-$(CONFIG_PCIFRONT) += pcifront.c
 src-y += sched.c
 src-$(CONFIG_TEST) += test.c
@@ -165,25 +160,6 @@ $(TARGET_ARCH_DIR)/include/mini-os:
 arch_lib:
 	$(MAKE) --directory=$(TARGET_ARCH_DIR) OBJ_DIR=$(OBJ_DIR)/$(TARGET_ARCH_DIR) || exit 1;
 
-ifeq ($(CONFIG_LWIP),y)
-# lwIP library
-LWC	:= $(sort $(shell find $(LWIPDIR)/src -type f -name '*.c'))
-LWC	:= $(filter-out %6.c %ip6_addr.c %ethernetif.c, $(LWC))
-LWO	:= $(patsubst %.c,%.o,$(LWC))
-LWO	+= $(OBJ_DIR)/lwip-arch.o
-ifeq ($(CONFIG_NETFRONT),y)
-LWO += $(OBJ_DIR)/lwip-net.o
-endif
-
-$(OBJ_DIR)/lwip.a: $(LWO)
-	$(RM) $@
-	$(AR) cqs $@ $^
-
-OBJS += $(OBJ_DIR)/lwip.a
-endif
-
-OBJS := $(filter-out $(OBJ_DIR)/lwip%.o $(LWO), $(OBJS))
-
 ifeq ($(libc),y)
 ifeq ($(CONFIG_XC),y)
 APP_LDLIBS += -L$(XEN_ROOT)/stubdom/libxc-$(MINIOS_TARGET_ARCH) -whole-archive -lxenguest -lxenctrl -no-whole-archive
@@ -192,10 +168,6 @@ APP_LDLIBS += -lpci
 APP_LDLIBS += -lz
 APP_LDLIBS += -lm
 LDLIBS += -lc
-endif
-
-ifneq ($(APP_OBJS)-$(lwip),-y)
-OBJS := $(filter-out $(OBJ_DIR)/daytime.o, $(OBJS))
 endif
 
 $(OBJ_DIR)/$(TARGET)_app.o: $(APP_OBJS) app.lds
@@ -258,7 +230,6 @@ clean:	arch_clean
 	rm -f include/list.h
 	rm -f $(OBJ_DIR)/*.o *~ $(OBJ_DIR)/core $(OBJ_DIR)/$(TARGET).elf $(OBJ_DIR)/$(TARGET).raw $(OBJ_DIR)/$(TARGET) $(OBJ_DIR)/$(TARGET).gz
 	find . $(OBJ_DIR) -type l | xargs rm -f
-	$(RM) $(OBJ_DIR)/lwip.a $(LWO)
 	rm -f tags TAGS
 	rm -f libminios-xen.pc
 

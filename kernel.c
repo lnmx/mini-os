@@ -38,7 +38,6 @@
 #include <mini-os/sched.h>
 #include <mini-os/xenbus.h>
 #include <mini-os/gnttab.h>
-#include <mini-os/netfront.h>
 #include <mini-os/blkfront.h>
 #include <mini-os/fbfront.h>
 #include <mini-os/pcifront.h>

@@ -64,9 +64,6 @@ static void call_main(void *p)
 #ifdef CONFIG_SPARSE_BSS
     sparse((unsigned long) &__app_bss_start, &__app_bss_end - &__app_bss_start);
 #endif
-#if defined(HAVE_LWIP) && defined(CONFIG_START_NETWORK) && defined(CONFIG_NETFRONT)
-    start_networking();
-#endif
 #ifdef CONFIG_PCIFRONT
     create_thread("pcifront", pcifront_watches, NULL);
 #endif
@@ -172,9 +169,6 @@ void _exit(int ret)
     close_all_files();
     __libc_fini_array();
     printk("main returned %d\n", ret);
-#if defined(HAVE_LWIP) && defined(CONFIG_NETFRONT)
-    stop_networking();
-#endif
     stop_kernel();
     if (!ret) {
 	/* No problem, just shutdown.  */
