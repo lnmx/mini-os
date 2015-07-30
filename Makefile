@@ -24,10 +24,6 @@ CONFIG_START_NETWORK ?= n
 CONFIG_SPARSE_BSS ?= y
 CONFIG_QEMU_XS_ARGS ?= n
 CONFIG_TEST ?= n
-CONFIG_PCIFRONT ?= n
-CONFIG_BLKFRONT ?= n
-CONFIG_FBFRONT ?= n
-CONFIG_KBDFRONT ?= n
 CONFIG_CONSFRONT ?= y
 CONFIG_XENBUS ?= y
 CONFIG_XC ?=y
@@ -36,10 +32,6 @@ CONFIG_XC ?=y
 flags-$(CONFIG_START_NETWORK) += -DCONFIG_START_NETWORK
 flags-$(CONFIG_SPARSE_BSS) += -DCONFIG_SPARSE_BSS
 flags-$(CONFIG_QEMU_XS_ARGS) += -DCONFIG_QEMU_XS_ARGS
-flags-$(CONFIG_PCIFRONT) += -DCONFIG_PCIFRONT
-flags-$(CONFIG_BLKFRONT) += -DCONFIG_BLKFRONT
-flags-$(CONFIG_KBDFRONT) += -DCONFIG_KBDFRONT
-flags-$(CONFIG_FBFRONT) += -DCONFIG_FBFRONT
 flags-$(CONFIG_CONSFRONT) += -DCONFIG_CONSFRONT
 flags-$(CONFIG_XENBUS) += -DCONFIG_XENBUS
 
@@ -95,9 +87,7 @@ FDT_SRC := dtc/libfdt/fdt.c dtc/libfdt/fdt_ro.c dtc/libfdt/fdt_strerror.c
 src-y += ${FDT_SRC}
 endif
 
-src-$(CONFIG_BLKFRONT) += blkfront.c
 src-y += events.c
-src-$(CONFIG_FBFRONT) += fbfront.c
 src-y += gntmap.c
 src-y += gnttab.c
 src-y += hypervisor.c
@@ -105,7 +95,6 @@ src-y += kernel.c
 src-y += lock.c
 src-y += main.c
 src-y += mm.c
-src-$(CONFIG_PCIFRONT) += pcifront.c
 src-y += sched.c
 src-$(CONFIG_TEST) += test.c
 

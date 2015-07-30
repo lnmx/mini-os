@@ -9,7 +9,6 @@
 #include <sched.h>
 #include <console.h>
 #include <netfront.h>
-#include <pcifront.h>
 #include <time.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -63,9 +62,6 @@ static void call_main(void *p)
 
 #ifdef CONFIG_SPARSE_BSS
     sparse((unsigned long) &__app_bss_start, &__app_bss_end - &__app_bss_start);
-#endif
-#ifdef CONFIG_PCIFRONT
-    create_thread("pcifront", pcifront_watches, NULL);
 #endif
 
 #ifdef CONFIG_QEMU_XS_ARGS

@@ -25,8 +25,6 @@
 #include <events.h>
 #include <wait.h>
 #include <netfront.h>
-#include <blkfront.h>
-#include <fbfront.h>
 #include <xenbus.h>
 #include <xenstore.h>
 #include <poll.h>
@@ -258,35 +256,6 @@ int read(int fd, void *buf, size_t nbytes)
 	    return ret;
 	}
 #endif
-#ifdef CONFIG_KBDFRONT
-        case FTYPE_KBD: {
-            int ret, n;
-            n = nbytes / sizeof(union xenkbd_in_event);
-            ret = kbdfront_receive(files[fd].kbd.dev, buf, n);
-	    if (ret <= 0) {
-		errno = EAGAIN;
-		return -1;
-	    }
-	    return ret * sizeof(union xenkbd_in_event);
-        }
-#endif
-#ifdef CONFIG_FBFRONT
-        case FTYPE_FB: {
-            int ret, n;
-            n = nbytes / sizeof(union xenfb_in_event);
-            ret = fbfront_receive(files[fd].fb.dev, buf, n);
-	    if (ret <= 0) {
-		errno = EAGAIN;
-		return -1;
-	    }
-	    return ret * sizeof(union xenfb_in_event);
-        }
-#endif
-#ifdef CONFIG_BLKFRONT
-        case FTYPE_BLK: {
-	    return blkfront_posix_read(fd, buf, nbytes);
-        }
-#endif
 	default:
 	    break;
     }
@@ -315,10 +284,6 @@ int write(int fd, const void *buf, size_t nbytes)
 	    netfront_xmit(files[fd].tap.dev, (void*) buf, nbytes);
 	    return nbytes;
 #endif
-#ifdef CONFIG_BLKFRONT
-	case FTYPE_BLK:
-	    return blkfront_posix_write(fd, buf, nbytes);
-#endif
 	default:
 	    break;
     }
@@ -331,11 +296,6 @@ off_t lseek(int fd, off_t offset, int whence)
 {
     off_t* target = NULL;
     switch(files[fd].type) {
-#ifdef CONFIG_BLKFRONT
-       case FTYPE_BLK:
-          target = &files[fd].blk.offset;
-          break;
-#endif
        case FTYPE_FILE:
           target = &files[fd].file.offset;
           break;
@@ -397,30 +357,6 @@ int close(int fd)
 	    minios_gnttab_close_fd(fd);
 	    return 0;
 #endif
-#ifdef CONFIG_NETFRONT
-	case FTYPE_TAP:
-	    shutdown_netfront(files[fd].tap.dev);
-	    files[fd].type = FTYPE_NONE;
-	    return 0;
-#endif
-#ifdef CONFIG_BLKFRONT
-	case FTYPE_BLK:
-            shutdown_blkfront(files[fd].blk.dev);
-	    files[fd].type = FTYPE_NONE;
-	    return 0;
-#endif
-#ifdef CONFIG_KBDFRONT
-	case FTYPE_KBD:
-            shutdown_kbdfront(files[fd].kbd.dev);
-            files[fd].type = FTYPE_NONE;
-            return 0;
-#endif
-#ifdef CONFIG_FBFRONT
-	case FTYPE_FB:
-            shutdown_fbfront(files[fd].fb.dev);
-            files[fd].type = FTYPE_NONE;
-            return 0;
-#endif
 #ifdef CONFIG_CONSFRONT
         case FTYPE_SAVEFILE:
         case FTYPE_CONSOLE:
@@ -474,10 +410,6 @@ int fstat(int fd, struct stat *buf)
 	    buf->st_ctime = time(NULL);
 	    return 0;
 	}
-#ifdef CONFIG_BLKFRONT
-	case FTYPE_BLK:
-	   return blkfront_posix_fstat(fd, buf);
-#endif
 	default:
 	    break;
     }
@@ -732,14 +664,8 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
     DEFINE_WAIT(netfront_w);
 #endif
     DEFINE_WAIT(event_w);
-#ifdef CONFIG_BLKFRONT
-    DEFINE_WAIT(blkfront_w);
-#endif
 #ifdef CONFIG_XENBUS
     DEFINE_WAIT(xenbus_watch_w);
-#endif
-#ifdef CONFIG_KBDFRONT
-    DEFINE_WAIT(kbdfront_w);
 #endif
     DEFINE_WAIT(console_w);
 
@@ -762,9 +688,6 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
     add_waiter(netfront_w, netfront_queue);
 #endif
     add_waiter(event_w, event_queue);
-#ifdef CONFIG_BLKFRONT
-    add_waiter(blkfront_w, blkfront_queue);
-#endif
 #ifdef CONFIG_XENBUS
     add_waiter(xenbus_watch_w, xenbus_watch_queue);
 #endif
@@ -853,18 +776,9 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
     ret = -1;
 
 out:
-#ifdef CONFIG_NETFRONT
-    remove_waiter(netfront_w, netfront_queue);
-#endif
     remove_waiter(event_w, event_queue);
-#ifdef CONFIG_BLKFRONT
-    remove_waiter(blkfront_w, blkfront_queue);
-#endif
 #ifdef CONFIG_XENBUS
     remove_waiter(xenbus_watch_w, xenbus_watch_queue);
-#endif
-#ifdef CONFIG_KBDFRONT
-    remove_waiter(kbdfront_w, kbdfront_queue);
 #endif
     remove_waiter(console_w, console_queue);
     return ret;
