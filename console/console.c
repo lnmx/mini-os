@@ -161,4 +161,5 @@ void init_console(void)
     console_initialised = 1;
     /* This is also required to notify the daemon */
     printk("done.\n");
+    printk("Mini-OS: " MINIOS_REV "\n");
 }
