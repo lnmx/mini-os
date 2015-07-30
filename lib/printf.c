@@ -47,8 +47,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#if !defined HAVE_LIBC
-
 #include <mini-os/os.h>
 #include <mini-os/types.h>
 #include <mini-os/hypervisor.h>
@@ -815,4 +813,3 @@ int sscanf(const char * buf, const char * fmt, ...)
 	return i;
 }
 
-#endif

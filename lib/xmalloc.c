@@ -43,7 +43,6 @@
 #include <mini-os/list.h>
 #include <mini-os/xmalloc.h>
 
-#ifndef HAVE_LIBC
 /* static spinlock_t freelist_lock = SPIN_LOCK_UNLOCKED; */
 
 struct xmalloc_hdr
@@ -306,7 +305,6 @@ void free(void *ptr)
 {
     xfree(ptr);
 }
-#endif
 
 /*
  * Local variables:

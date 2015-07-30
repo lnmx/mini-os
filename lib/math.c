@@ -81,9 +81,7 @@ union uu {
  * These are used for shifting, and also below for halfword extraction
  * and assembly.
  */
-#ifndef HAVE_LIBC
 #define CHAR_BIT        8               /* number of bits in a char */
-#endif
 #define	QUAD_BITS	(sizeof(quad_t) * CHAR_BIT)
 #define	LONG_BITS	(sizeof(int32_t) * CHAR_BIT)
 #define	HALF_BITS	(sizeof(int32_t) * CHAR_BIT / 2)

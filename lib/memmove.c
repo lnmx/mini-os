@@ -9,8 +9,6 @@
 #include <os.h>
 #include <mini-os/lib.h>
 
-#ifndef HAVE_LIBC
-
 void *memmove(void *dest, const void *src, size_t n)
 {
 	uint8_t* from = (uint8_t*) src;
@@ -42,4 +40,3 @@ void *memmove(void *dest, const void *src, size_t n)
 	return dest;
 }
 
-#endif

@@ -65,12 +65,7 @@
 #define BUILD_BUG_ON(cond) ((void)BUILD_BUG_ON_ZERO(cond))
 #endif
 
-#ifdef HAVE_LIBC
-#include <sys/queue.h>
-#include <stdio.h>
-#else
 #include <lib-gpl.h>
-#endif
 
 #include <string.h>
 
@@ -90,82 +85,5 @@ int rand(void);
 
 /* Consistency check as much as possible. */
 void sanity_check(void);
-
-#ifdef HAVE_LIBC
-enum fd_type {
-    FTYPE_NONE = 0,
-    FTYPE_CONSOLE,
-    FTYPE_FILE,
-    FTYPE_XENBUS,
-    FTYPE_XC,
-    FTYPE_EVTCHN,
-    FTYPE_GNTMAP,
-    FTYPE_SOCKET,
-    FTYPE_TAP,
-    FTYPE_BLK,
-    FTYPE_KBD,
-    FTYPE_FB,
-    FTYPE_MEM,
-    FTYPE_SAVEFILE,
-};
-
-LIST_HEAD(evtchn_port_list, evtchn_port_info);
-
-struct evtchn_port_info {
-        LIST_ENTRY(evtchn_port_info) list;
-        evtchn_port_t port;
-        unsigned long pending;
-        int bound;
-};
-
-extern struct file {
-    enum fd_type type;
-    union {
-	struct {
-            /* lwIP fd */
-	    int fd;
-	} socket;
-	struct {
-            /* FS import fd */
-	    int fd;
-	    off_t offset;
-	} file;
-	struct {
-	    struct evtchn_port_list ports;
-	} evtchn;
-	struct gntmap gntmap;
-	struct {
-	    struct netfront_dev *dev;
-	} tap;
-	struct {
-	    struct blkfront_dev *dev;
-            off_t offset;
-	} blk;
-	struct {
-	    struct kbdfront_dev *dev;
-	} kbd;
-	struct {
-	    struct fbfront_dev *dev;
-	} fb;
-	struct {
-	    struct consfront_dev *dev;
-	} cons;
-#ifdef CONFIG_XENBUS
-        struct {
-            /* To each xenbus FD is associated a queue of watch events for this
-             * FD.  */
-            xenbus_event_queue events;
-        } xenbus;
-#endif
-    };
-    int read;	/* maybe available for read */
-} files[];
-
-int alloc_fd(enum fd_type type);
-void close_all_files(void);
-extern struct thread *main_thread;
-void sparse(unsigned long data, size_t size);
-char *minios_printf_render_float(char *buf, char *end, long double arg, char fmt, char qualifier, int size, int precision, int type);
-#endif
 
 #endif /* _LIB_H_ */

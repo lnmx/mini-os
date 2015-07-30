@@ -55,8 +55,6 @@ int ffsll (long long int lli)
     return __ffsti2 (lli);
 }
 
-#if !defined HAVE_LIBC
-
 #include <mini-os/os.h>
 #include <mini-os/types.h>
 #include <mini-os/lib.h>
@@ -237,4 +235,4 @@ void *memchr(const void *s, int c, size_t n)
     }
     return (NULL);
 }
-#endif
+

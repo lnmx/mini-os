@@ -22,11 +22,9 @@
 #include <stddef.h>
 
 /* FreeBSD compat types */
-#ifndef HAVE_LIBC
 typedef unsigned char       u_char;
 typedef unsigned int        u_int;
 typedef unsigned long       u_long;
-#endif
 #if defined(__i386__) || defined(__arm__)
 typedef long long           quad_t;
 typedef unsigned long long  u_quad_t;
@@ -35,10 +33,6 @@ typedef long                quad_t;
 typedef unsigned long       u_quad_t;
 #endif /* __i386__ || __x86_64__ */
 
-#ifdef HAVE_LIBC
-#include <limits.h>
-#include <stdint.h>
-#else
 #if defined(__i386__) || defined(__arm__)
 typedef unsigned int        uintptr_t;
 typedef int                 intptr_t;
@@ -62,13 +56,10 @@ typedef unsigned long uint64_t;
 typedef uint64_t uintmax_t;
 typedef  int64_t intmax_t;
 typedef  int64_t off_t;
-#endif
 
 typedef intptr_t            ptrdiff_t;
 
 
-#ifndef HAVE_LIBC
 typedef long ssize_t;
-#endif
 
 #endif /* _TYPES_H_ */

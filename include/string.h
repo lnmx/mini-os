@@ -50,10 +50,6 @@
 
 #include <stddef.h>
 
-#ifdef HAVE_LIBC
-#error LIBC should override Mini-OS string.h
-#endif
-
 /* string and memory manipulation */
 
 /*

@@ -67,7 +67,6 @@ __attribute__((weak)) void console_input(char * buf, unsigned len)
     }
 }
 
-#ifndef HAVE_LIBC
 void xencons_rx(char *buf, unsigned len, struct pt_regs *regs)
 {
     console_input(buf, len);
@@ -77,7 +76,6 @@ void xencons_tx(void)
 {
     /* Do nothing, handled by _rx */
 }
-#endif
 
 
 void console_print(struct consfront_dev *dev, char *data, int length)

@@ -1,10 +1,6 @@
 #ifndef _I386_FCNTL_H
 #define _I386_FCNTL_H
 
-#ifdef HAVE_LIBC
-#include_next <fcntl.h>
-#else
-
 /* open/fcntl - O_SYNC is only implemented on blocks devices and on files
    located on an ext2 file system */
 #define O_ACCMODE	   0003
@@ -90,8 +86,6 @@ struct flock64 {
 
 #define F_LINUX_SPECIFIC_BASE	1024
 */
-
-#endif
 
 int open(const char *path, int flags, ...) asm("open64");
 int fcntl(int fd, int cmd, ...);

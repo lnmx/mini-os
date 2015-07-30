@@ -31,7 +31,6 @@
 #ifndef _LIB_GPL_H_
 #define _LIB_GPL_H_
 
-#ifndef HAVE_LIBC
 /* printing */
 extern unsigned long simple_strtoul(const char *,char **,unsigned int);
 extern long simple_strtol(const char *,char **,unsigned int);
@@ -54,6 +53,5 @@ extern int sscanf(const char *, const char *, ...)
 	__attribute__ ((format (scanf, 2, 3)));
 extern int vsscanf(const char *, const char *, va_list)
 	__attribute__ ((format (scanf, 2, 0)));
-#endif
 
 #endif /* _LIB_GPL_H_ */

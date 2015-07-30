@@ -57,7 +57,6 @@ static void xenbus_tester(void *p)
 }
 #endif
 
-#ifndef HAVE_LIBC
 /* Should be random enough for our uses */
 int rand(void)
 {
@@ -68,7 +67,6 @@ int rand(void)
     previous *= RAND_MIX;
     return previous;
 }
-#endif
 
 static void periodic_thread(void *p)
 {

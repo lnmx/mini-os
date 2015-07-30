@@ -92,8 +92,6 @@ src-y += gntmap.c
 src-y += gnttab.c
 src-y += hypervisor.c
 src-y += kernel.c
-src-y += lock.c
-src-y += main.c
 src-y += mm.c
 src-y += sched.c
 src-$(CONFIG_TEST) += test.c
@@ -106,10 +104,8 @@ src-y += lib/printf.c
 src-y += lib/stack_chk_fail.c
 src-y += lib/string.c
 src-y += lib/memmove.c
-src-y += lib/sys.c
 src-y += lib/assert.c
 src-y += lib/xmalloc.c
-src-$(CONFIG_XENBUS) += lib/xs.c
 
 src-$(CONFIG_XENBUS) += xenbus/xenbus.c
 

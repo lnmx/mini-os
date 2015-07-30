@@ -24,14 +24,7 @@ cc-option = $(shell if test -z "`echo 'void*p=1;' | \
               $(1) $(2) -S -o /dev/null -x c - 2>&1 | grep -- $(2) -`"; \
               then echo "$(2)"; else echo "$(3)"; fi ;)
 
-# Compatibility with Xen's stubdom build environment.  If we are building
-# stubdom, some XEN_ variables are set, set MINIOS_ variables accordingly.
-#
-ifneq ($(XEN_ROOT),)
-MINI-OS_ROOT=$(XEN_ROOT)/extras/mini-os
-else
 MINI-OS_ROOT=$(TOPLEVEL_DIR)
-endif
 export MINI-OS_ROOT
 
 ifneq ($(XEN_TARGET_ARCH),)
@@ -44,8 +37,6 @@ MINIOS_COMPILE_ARCH    ?= $(shell uname -m | sed -e s/i.86/x86_32/ \
 
 MINIOS_TARGET_ARCH     ?= $(MINIOS_COMPILE_ARCH)
 endif
-
-libc = $(stubdom)
 
 XEN_INTERFACE_VERSION := 0x00030205
 export XEN_INTERFACE_VERSION
@@ -87,10 +78,4 @@ extra_incl := $(foreach dir,$(EXTRA_INC),-isystem $(MINI-OS_ROOT)/$(dir))
 
 DEF_CPPFLAGS += -isystem $(MINI-OS_ROOT)/include
 DEF_CPPFLAGS += -D__MINIOS__
-
-ifeq ($(libc),y)
-DEF_CPPFLAGS += -DHAVE_LIBC
-DEF_CPPFLAGS += -isystem $(MINI-OS_ROOT)/include/posix
-DEF_CPPFLAGS += -isystem $(XEN_ROOT)/tools/xenstore/include
-endif
 
