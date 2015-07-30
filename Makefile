@@ -25,7 +25,6 @@ CONFIG_SPARSE_BSS ?= y
 CONFIG_QEMU_XS_ARGS ?= n
 CONFIG_CONSFRONT ?= y
 CONFIG_XENBUS ?= y
-CONFIG_XC ?=y
 
 # Export config items as compiler directives
 flags-$(CONFIG_START_NETWORK) += -DCONFIG_START_NETWORK
@@ -139,16 +138,6 @@ $(TARGET_ARCH_DIR)/include/mini-os:
 .PHONY: arch_lib
 arch_lib:
 	$(MAKE) --directory=$(TARGET_ARCH_DIR) OBJ_DIR=$(OBJ_DIR)/$(TARGET_ARCH_DIR) || exit 1;
-
-ifeq ($(libc),y)
-ifeq ($(CONFIG_XC),y)
-APP_LDLIBS += -L$(XEN_ROOT)/stubdom/libxc-$(MINIOS_TARGET_ARCH) -whole-archive -lxenguest -lxenctrl -no-whole-archive
-endif
-APP_LDLIBS += -lpci
-APP_LDLIBS += -lz
-APP_LDLIBS += -lm
-LDLIBS += -lc
-endif
 
 $(OBJ_DIR)/$(TARGET)_app.o: $(APP_OBJS) app.lds
 	$(LD) -r -d $(LDFLAGS) -\( $^ -\) $(APP_LDLIBS) --undefined main -o $@
