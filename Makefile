@@ -22,13 +22,11 @@ flags-y += "-DMINIOS_REV=\"mini-er $(MINIOS_REV)\""
 # Configuration defaults
 CONFIG_SPARSE_BSS ?= y
 CONFIG_QEMU_XS_ARGS ?= n
-CONFIG_CONSFRONT ?= y
 CONFIG_XENBUS ?= y
 
 # Export config items as compiler directives
 flags-$(CONFIG_SPARSE_BSS) += -DCONFIG_SPARSE_BSS
 flags-$(CONFIG_QEMU_XS_ARGS) += -DCONFIG_QEMU_XS_ARGS
-flags-$(CONFIG_CONSFRONT) += -DCONFIG_CONSFRONT
 flags-$(CONFIG_XENBUS) += -DCONFIG_XENBUS
 
 DEF_CFLAGS += $(flags-y)
@@ -103,7 +101,6 @@ src-$(CONFIG_XENBUS) += xenbus/xenbus.c
 
 src-y += console/console.c
 src-y += console/xencons_ring.c
-src-$(CONFIG_CONSFRONT) += console/xenbus.c
 
 # The common mini-os objects to build.
 APP_OBJS :=
