@@ -18,14 +18,13 @@
 #include <mini-os/os.h>
 #include <mini-os/mm.h>
 #include <mini-os/gnttab.h>
-#include <mini-os/semaphore.h>
+#include <mini-os/lib.h>
 
 grant_entry_t *gnttab_table;
 static grant_ref_t gnttab_list[NR_GRANT_ENTRIES];
 #ifdef GNT_DEBUG
 static char inuse[NR_GRANT_ENTRIES];
 #endif
-static __DECLARE_SEMAPHORE_GENERIC(gnttab_sem, 0);
 
 static void
 put_free_entry(grant_ref_t ref)
@@ -39,7 +38,6 @@ put_free_entry(grant_ref_t ref)
     gnttab_list[ref] = gnttab_list[0];
     gnttab_list[0]  = ref;
     local_irq_restore(flags);
-    up(&gnttab_sem);
 }
 
 static grant_ref_t
@@ -47,7 +45,6 @@ get_free_entry(void)
 {
     unsigned int ref;
     unsigned long flags;
-    down(&gnttab_sem);
     local_irq_save(flags);
     ref = gnttab_list[0];
     BUG_ON(ref < NR_RESERVED_ENTRIES || ref >= NR_GRANT_ENTRIES);

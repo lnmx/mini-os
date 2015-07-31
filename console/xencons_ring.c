@@ -1,5 +1,4 @@
 #include <mini-os/types.h>
-#include <mini-os/wait.h>
 #include <mini-os/mm.h>
 #include <mini-os/hypervisor.h>
 #include <mini-os/events.h>
@@ -12,8 +11,6 @@
 #include <mini-os/xmalloc.h>
 #include <mini-os/gnttab.h>
 #include "console.h"
-
-DECLARE_WAIT_QUEUE_HEAD(console_queue);
 
 static inline void notify_daemon(struct consfront_dev *dev)
 {

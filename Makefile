@@ -22,12 +22,10 @@ flags-y += "-DMINIOS_REV=\"mini-er $(MINIOS_REV)\""
 # Configuration defaults
 CONFIG_SPARSE_BSS ?= y
 CONFIG_QEMU_XS_ARGS ?= n
-CONFIG_XENBUS ?= y
 
 # Export config items as compiler directives
 flags-$(CONFIG_SPARSE_BSS) += -DCONFIG_SPARSE_BSS
 flags-$(CONFIG_QEMU_XS_ARGS) += -DCONFIG_QEMU_XS_ARGS
-flags-$(CONFIG_XENBUS) += -DCONFIG_XENBUS
 
 DEF_CFLAGS += $(flags-y)
 
@@ -96,8 +94,6 @@ src-y += lib/string.c
 src-y += lib/memmove.c
 src-y += lib/assert.c
 src-y += lib/xmalloc.c
-
-src-$(CONFIG_XENBUS) += xenbus/xenbus.c
 
 src-y += console/console.c
 src-y += console/xencons_ring.c

@@ -44,7 +44,6 @@
 #include <mini-os/xmalloc.h>
 #include <mini-os/list.h>
 #include <mini-os/sched.h>
-#include <mini-os/semaphore.h>
 
 
 #ifdef SCHED_DEBUG
@@ -116,24 +115,5 @@ struct thread* arch_create_thread(char *name, void (*function)(void *),
     thread->ip = (unsigned long) thread_starter;
     return thread;
 }
-
-void run_idle_thread(void)
-{
-    /* Switch stacks and run the thread */ 
-#if defined(__i386__)
-    __asm__ __volatile__("mov %0,%%esp\n\t"
-                         "push %1\n\t" 
-                         "ret"                                            
-                         :"=m" (idle_thread->sp)
-                         :"m" (idle_thread->ip));                          
-#elif defined(__x86_64__)
-    __asm__ __volatile__("mov %0,%%rsp\n\t"
-                         "push %1\n\t" 
-                         "ret"                                            
-                         :"=m" (idle_thread->sp)
-                         :"m" (idle_thread->ip));                                                    
-#endif
-}
-
 
 
