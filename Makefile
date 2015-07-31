@@ -16,7 +16,7 @@ endif
 
 include $(MINI-OS_ROOT)/config/MiniOS.mk
 
-MINIOS_REV=`date --rfc-3339=sec`
+MINIOS_REV=$(shell date --rfc-3339=sec)
 flags-y += "-DMINIOS_REV=\"mini-er $(MINIOS_REV)\""
 
 # Configuration defaults
