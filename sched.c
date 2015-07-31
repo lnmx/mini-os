@@ -46,11 +46,6 @@
 #include <mini-os/sched.h>
 
 
-MINIOS_TAILQ_HEAD(thread_list, struct thread);
-
-static struct thread_list exited_threads = MINIOS_TAILQ_HEAD_INITIALIZER(exited_threads);
-static struct thread_list thread_list = MINIOS_TAILQ_HEAD_INITIALIZER(thread_list);
-
 void exit_thread(void)
 {
     printk("exit_thread\n");
