@@ -35,7 +35,6 @@
 #include <mini-os/time.h>
 #include <mini-os/types.h>
 #include <mini-os/lib.h>
-#include <mini-os/xenbus.h>
 #include <mini-os/gnttab.h>
 #include <mini-os/xmalloc.h>
 #include <fcntl.h>
@@ -60,17 +59,6 @@ void setup_xen_features(void)
     }
 }
 
-#ifdef CONFIG_XENBUS
-/* This should be overridden by the application we are linked against. */
-__attribute__((weak)) void app_shutdown(unsigned reason)
-{
-    struct sched_shutdown sched_shutdown = { .reason = reason };
-    printk("Shutdown requested: %d\n", reason);
-    HYPERVISOR_sched_op(SCHEDOP_shutdown, &sched_shutdown);
-}
-#endif
-
-
 /* This should be overridden by the application we are linked against. */
 __attribute__((weak)) int app_main(start_info_t *si)
 {
@@ -92,7 +80,7 @@ void stop_kernel(void)
     fini_gnttab();
 
     /* Reset XenBus */
-    fini_xenbus();
+    //fini_xenbus();
 
     /* Reset timers */
     fini_time();

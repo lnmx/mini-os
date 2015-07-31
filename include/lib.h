@@ -75,8 +75,6 @@
 
 int rand(void);
 
-#include <mini-os/xenbus.h>
-
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 #define ASSERT(x) assert(x)

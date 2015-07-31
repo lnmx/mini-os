@@ -40,7 +40,6 @@
 #include <mini-os/traps.h>
 #include <mini-os/types.h>
 #include <xen/grant_table.h>
-#include <xenbus.h>
 #include <xen/io/console.h>
 #include <stdarg.h>
 
@@ -54,7 +53,7 @@ struct consfront_dev {
     char *nodename;
     char *backend;
 
-    xenbus_event_queue events;
+    //xenbus_event_queue events;
 };
 
 
