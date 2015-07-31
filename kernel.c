@@ -37,7 +37,6 @@
 #include <mini-os/lib.h>
 #include <mini-os/gnttab.h>
 #include <mini-os/xmalloc.h>
-#include <fcntl.h>
 #include <xen/features.h>
 #include <xen/version.h>
 
