@@ -43,8 +43,6 @@
 #include <mini-os/list.h>
 #include <mini-os/xmalloc.h>
 
-/* static spinlock_t freelist_lock = SPIN_LOCK_UNLOCKED; */
-
 struct xmalloc_hdr
 {
     /* Total including this hdr, unused padding and second hdr. */
@@ -82,9 +80,7 @@ static void maybe_split(struct xmalloc_hdr *hdr, size_t size, size_t block)
     {
         extra = (struct xmalloc_hdr *)((unsigned long)hdr + size);
         extra->size = leftover;
-        /* spin_lock_irqsave(&freelist_lock, flags); */
         MINIOS_TAILQ_INSERT_HEAD(&freelist, extra, freelist);
-        /* spin_unlock_irqrestore(&freelist_lock, flags); */
     }
     else
     {
@@ -151,7 +147,6 @@ void *_xmalloc(size_t size, size_t align)
         return xmalloc_whole_pages(size, align);
 
     /* Search free list. */
-    /* spin_lock_irqsave(&freelist_lock, flags); */
     MINIOS_TAILQ_FOREACH_SAFE(i, &freelist, freelist, tmp)
     {
         data_begin = align_up((uintptr_t)i + hdr_size, align);
@@ -160,7 +155,6 @@ void *_xmalloc(size_t size, size_t align)
             continue;
 
         MINIOS_TAILQ_REMOVE(&freelist, i, freelist);
-        /* spin_unlock_irqrestore(&freelist_lock, flags); */
 
         uintptr_t size_before = (data_begin - hdr_size) - (uintptr_t)i;
 
@@ -169,9 +163,7 @@ void *_xmalloc(size_t size, size_t align)
             struct xmalloc_hdr *new_i = (void*)(data_begin - hdr_size);
             new_i->size = i->size - size_before;
             i->size = size_before;
-            /* spin_lock_irqsave(&freelist_lock, flags); */
             MINIOS_TAILQ_INSERT_HEAD(&freelist, i, freelist);
-            /* spin_unlock_irqrestore(&freelist_lock, flags); */
             i = new_i;
         }
         maybe_split(i, (data_begin + size) - (uintptr_t)i, i->size);
@@ -180,7 +172,6 @@ void *_xmalloc(size_t size, size_t align)
     }
 
     if (!hdr) {
-        /* spin_unlock_irqrestore(&freelist_lock, flags); */
 
         /* Alloc a new page and return from that. */
         hdr = xmalloc_new_page(align_up(hdr_size, align) + size);
@@ -222,7 +213,6 @@ void xfree(const void *p)
     }
 
     /* Merge with other free block, or put in list. */
-    /* spin_lock_irqsave(&freelist_lock, flags); */
     MINIOS_TAILQ_FOREACH_SAFE(i, &freelist, freelist, tmp)
     {
         unsigned long _i   = (unsigned long)i;
@@ -262,8 +252,6 @@ void xfree(const void *p)
     {
         MINIOS_TAILQ_INSERT_HEAD(&freelist, hdr, freelist);
     }
-
-    /* spin_unlock_irqrestore(&freelist_lock, flags); */
 }
 
 void *malloc(size_t size)

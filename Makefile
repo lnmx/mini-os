@@ -88,7 +88,6 @@ ifneq ($(MINIOS_TARGET_ARCH),arm32)
 src-y += lib/math.c
 endif
 src-y += lib/printf.c
-src-y += lib/stack_chk_fail.c
 src-y += lib/string.c
 src-y += lib/memmove.c
 src-y += lib/assert.c
