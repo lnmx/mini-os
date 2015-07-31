@@ -46,37 +46,7 @@ int in_callback;
  */
 __attribute__((weak)) void do_hypervisor_callback(struct pt_regs *regs)
 {
-    unsigned long  l1, l2, l1i, l2i;
-    unsigned int   port;
-    int            cpu = 0;
-    shared_info_t *s = HYPERVISOR_shared_info;
-    vcpu_info_t   *vcpu_info = &s->vcpu_info[cpu];
-
-    in_callback = 1;
-   
-    vcpu_info->evtchn_upcall_pending = 0;
-    /* NB x86. No need for a barrier here -- XCHG is a barrier on x86. */
-#if !defined(__i386__) && !defined(__x86_64__)
-    /* Clear master flag /before/ clearing selector flag. */
-    wmb();
-#endif
-    l1 = xchg(&vcpu_info->evtchn_pending_sel, 0);
-    while ( l1 != 0 )
-    {
-        l1i = __ffs(l1);
-        l1 &= ~(1UL << l1i);
-        
-        while ( (l2 = active_evtchns(cpu, s, l1i)) != 0 )
-        {
-            l2i = __ffs(l2);
-            l2 &= ~(1UL << l2i);
-
-            port = (l1i * (sizeof(unsigned long) * 8)) + l2i;
-            do_event(port, regs);
-        }
-    }
-
-    in_callback = 0;
+    // replaced by mirage-platform/bindings/eventchn_stubs.c
 }
 
 void force_evtchn_callback(void)
