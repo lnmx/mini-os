@@ -21,11 +21,9 @@ flags-y += "-DMINIOS_REV=\"mini-er $(MINIOS_REV)\""
 
 # Configuration defaults
 CONFIG_SPARSE_BSS ?= y
-CONFIG_QEMU_XS_ARGS ?= n
 
 # Export config items as compiler directives
 flags-$(CONFIG_SPARSE_BSS) += -DCONFIG_SPARSE_BSS
-flags-$(CONFIG_QEMU_XS_ARGS) += -DCONFIG_QEMU_XS_ARGS
 
 DEF_CFLAGS += $(flags-y)
 
@@ -63,7 +61,7 @@ EXTRA_OBJS =
 TARGET := mini-os
 
 # Subdirectories common to mini-os
-SUBDIRS := lib xenbus console dtc/libfdt
+SUBDIRS := lib console dtc/libfdt
 
 FDT_SRC :=
 ifeq ($(MINIOS_TARGET_ARCH),arm32)
@@ -97,11 +95,10 @@ src-y += console/console.c
 src-y += console/xencons_ring.c
 
 # The common mini-os objects to build.
-APP_OBJS :=
 OBJS := $(patsubst %.c,$(OBJ_DIR)/%.o,$(src-y))
 
 .PHONY: default
-default: $(OBJ_DIR)/$(TARGET)
+default: libminios.a
 
 # Create special architecture specific links. The function arch_links
 # has to be defined in arch.mk (see include above).
@@ -128,22 +125,8 @@ $(TARGET_ARCH_DIR)/include/mini-os:
 arch_lib:
 	$(MAKE) --directory=$(TARGET_ARCH_DIR) OBJ_DIR=$(OBJ_DIR)/$(TARGET_ARCH_DIR) || exit 1;
 
-$(OBJ_DIR)/$(TARGET)_app.o: $(APP_OBJS) app.lds
+$(OBJ_DIR)/$(TARGET)_app.o: app.lds
 	$(LD) -r -d $(LDFLAGS) -\( $^ -\) $(APP_LDLIBS) --undefined main -o $@
-
-ifneq ($(APP_OBJS),)
-APP_O=$(OBJ_DIR)/$(TARGET)_app.o 
-endif
-
-$(OBJ_DIR)/$(TARGET): $(OBJS) $(APP_O) arch_lib
-	$(LD) -r $(LDFLAGS) $(HEAD_OBJ) $(APP_O) $(OBJS) $(LDARCHLIB) $(LDLIBS) -o $@.o
-	$(OBJCOPY) -w -G $(GLOBAL_PREFIX)* -G _start $@.o $@.o
-	$(LD) $(LDFLAGS) $(LDFLAGS_FINAL) $@.o $(EXTRA_OBJS) -o $@
-ifeq ($(MINIOS_TARGET_ARCH),arm32)
-	$(OBJCOPY) -O binary $@ $@.img
-else
-	gzip -f -9 -c $@ >$@.gz
-endif
 
 libminios.a: $(HEAD_OBJ) $(APP_O) $(OBJS) arch_lib
 	rm -f $@
@@ -192,20 +175,3 @@ clean:	arch_clean
 	rm -f libminios-xen.pc
 	rm -f libminios.a
 
-
-define all_sources
-     ( find . -follow -name SCCS -prune -o -name '*.[chS]' -print )
-endef
-
-.PHONY: cscope
-cscope:
-	$(all_sources) > cscope.files
-	cscope -k -b -q
-    
-.PHONY: tags
-tags:
-	$(all_sources) | xargs ctags
-
-.PHONY: TAGS
-TAGS:
-	$(all_sources) | xargs etags
