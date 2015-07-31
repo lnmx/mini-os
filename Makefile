@@ -82,7 +82,6 @@ src-y += gnttab.c
 src-y += hypervisor.c
 src-y += kernel.c
 src-y += mm.c
-src-y += sched.c
 
 src-y += lib/ctype.c
 ifneq ($(MINIOS_TARGET_ARCH),arm32)

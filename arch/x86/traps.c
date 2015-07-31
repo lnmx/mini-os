@@ -4,7 +4,6 @@
 #include <mini-os/hypervisor.h>
 #include <mini-os/mm.h>
 #include <mini-os/lib.h>
-#include <mini-os/sched.h>
 
 /*
  * These are assembler stubs in entry.S.
@@ -32,8 +31,6 @@ void machine_check(void);
 
 void dump_regs(struct pt_regs *regs)
 {
-    if (current != NULL)
-        printk("Thread: %s\n", current->name);
 #ifdef __i386__    
     printk("EIP: %lx, EFLAGS %lx.\n", regs->eip, regs->eflags);
     printk("EBX: %08lx ECX: %08lx EDX: %08lx\n",
