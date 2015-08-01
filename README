@@ -1,4 +1,43 @@
- Minimal OS
+
+* Mini-OS / Mini-er experiment
+
+** Setup
+
+Redirect opam to the current git checkout:
+
+    opam pin add minios-xen .
+
+
+** Build
+
+Quick rebuild with:
+
+    make && make install PREFIX=`opam config var prefix`
+
+If the change affects mirage-plaform, rebuild all dependents with:
+
+    opam reinstall minios-xen
+
+** Test
+
+For example, in `mirage-skeleton/console`:
+
+    mirage configure --xen
+
+    mirage build
+
+    sudo xl create -c console.xl
+
+
+** References
+
+http://lists.xenproject.org/archives/html/mirageos-devel/2015-07/msg00106.html
+
+
+------
+
+
+Minimal OS
  ----------
 
 This shows some of the stuff that any guest OS will have to set up.
