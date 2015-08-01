@@ -19,12 +19,6 @@ include $(MINI-OS_ROOT)/config/MiniOS.mk
 MINIOS_REV=$(shell date --rfc-3339=sec)
 flags-y += "-DMINIOS_REV=\"mini-er $(MINIOS_REV)\""
 
-# Configuration defaults
-CONFIG_SPARSE_BSS ?= y
-
-# Export config items as compiler directives
-flags-$(CONFIG_SPARSE_BSS) += -DCONFIG_SPARSE_BSS
-
 DEF_CFLAGS += $(flags-y)
 
 # Symlinks and headers that must be created before building the C files
