@@ -43,11 +43,6 @@
 #include <xen/io/console.h>
 
 
-/* Copies all print output to the Xen emergency console apart
-   of standard dom0 handled console */
-#define USE_XEN_CONSOLE
-
-
 /* If console not initialised the printk will be sent to xen serial line 
    NOTE: you need to enable verbose in xen/Rules.mk for it to work. */
 static int console_initialised = 0;
@@ -126,11 +121,6 @@ void print(int direct, const char *fmt, va_list args)
         (void)HYPERVISOR_console_io(CONSOLEIO_write, strlen(buf), buf);
         return;
     } else {
-#ifndef USE_XEN_CONSOLE
-    if(!console_initialised)
-#endif    
-            (void)HYPERVISOR_console_io(CONSOLEIO_write, strlen(buf), buf);
-        
         console_print(NULL, buf, strlen(buf));
     }
 }
